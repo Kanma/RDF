@@ -1,0 +1,34 @@
+name: Build
+run-name: Test of commit "${{ github.event.head_commit.message }}"
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  build:
+    name: Test
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clone the repository
+      uses: actions/checkout@v4
+
+    - name: Test the software using Docker image with PyTorch installed 
+      uses: addnab/docker-run-action@v3
+      with:
+          image: pytorch/pytorch:1.13.0-cuda11.6-cudnn8-runtime
+          options: -v ${{ github.workspace }}:/opt/rdf
+          run: |
+              # Install git and OpenGL because one of the requirements(mesh-to-sdf) needs it
+              apt-get update
+              apt-get --yes install git libglu1-mesa-dev freeglut3-dev mesa-common-dev
+
+              # Install the requirements
+              cd /opt/rdf
+              pip install -r requirements.txt
+
+              # Test our code (by running one script since there aren't any tests)
+              python bf_sdf.py --device cpu --n_func 24

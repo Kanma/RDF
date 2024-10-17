@@ -269,16 +269,16 @@ if __name__ =='__main__':
 
     # load trained model
     model_path = f'models/BP_{args.n_func}.pt'
-    model = torch.load(model_path)
+    model = torch.load(model_path, args.device)
     
     # visualize the Bernstein Polynomial model for each robot link
-    bp_sdf.create_surface_mesh(model,nbData=128,vis=True,save_mesh_name=f'BP_{args.n_func}')
+    bp_sdf.create_surface_mesh(model,nbData=128,vis=False,save_mesh_name=f'BP_{args.n_func}')
 
-    # visualize the Bernstein Polynomial model for the whole body
-    theta = torch.tensor([0, -0.3, 0, -2.2, 0, 2.0, np.pi/4]).float().to(args.device).reshape(-1,7)
-    pose = torch.from_numpy(np.identity(4)).to(args.device).reshape(-1, 4, 4).expand(len(theta),4,4).float()
-    trans_list = panda.get_transformations_each_link(pose,theta)
-    utils.visualize_reconstructed_whole_body(model, trans_list, tag=f'BP_{args.n_func}')
+    # # visualize the Bernstein Polynomial model for the whole body
+    # theta = torch.tensor([0, -0.3, 0, -2.2, 0, 2.0, np.pi/4]).float().to(args.device).reshape(-1,7)
+    # pose = torch.from_numpy(np.identity(4)).to(args.device).reshape(-1, 4, 4).expand(len(theta),4,4).float()
+    # trans_list = panda.get_transformations_each_link(pose,theta)
+    # utils.visualize_reconstructed_whole_body(model, trans_list, tag=f'BP_{args.n_func}')
     
     # run RDF 
     x = torch.rand(128,3).to(args.device)*2.0 - 1.0
